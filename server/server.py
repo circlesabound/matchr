@@ -4,6 +4,7 @@ import cherrypy
 import random
 import string
 import os, os.path
+import sys
 
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('public/html'))
@@ -38,4 +39,7 @@ if __name__ == '__main__':
             'tools.staticdir.dir': './public'
         }
     }
+    if len(sys.argv) > 1 and sys.argv[1] == "--web":
+        cherrypy.server.socket_port = 80
+        cherrypy.server.socket_host = '0.0.0.0'
     cherrypy.quickstart(Matchr(), '/', conf)

@@ -6,27 +6,20 @@
 
 import cherrypy
 import urllib
-import hashlib
-import sqlite3
+import db
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('public/html')) # Jinja2 environment
 
 SESSION_KEY = '_cp_username'
 
-def check_credentials(username, password):
+def verify(username, password):
     """Verifies credentials for username and password.
     Returns None on success or a string describing the error on failure"""
-    if username in ('joe', 'steve') and password == 'secret':
+    db = DB.db()
+    if db.check_credentials(username, password):
         return None
     else:
         return u"Incorrect username or password."
-    
-    # An example implementation which uses an ORM could be:
-    # u = User.get(username)
-    # if u is None:
-    #     return u"Username %s is unknown to me." % username
-    # if u.password != md5.new(password).hexdigest():
-    #     return u"Incorrect password"
 
 def check_auth(*args, **kwargs):
     """A tool that looks in config for 'auth.require'. If found and it
@@ -122,7 +115,7 @@ class AuthController(object):
         if username is None or password is None:
             return self.get_loginform("", from_page=from_page)
         
-        error_msg = check_credentials(username, password)
+        error_msg = verify(username, password)
         if error_msg:
             return self.get_loginform(username, error_msg, from_page)
         else:

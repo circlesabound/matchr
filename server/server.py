@@ -4,8 +4,9 @@ import cherrypy
 import random
 import string
 import os, os.path
-import Auth
 import sys
+import Auth
+import db
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -13,6 +14,7 @@ env = Environment(loader=FileSystemLoader('public/html'))
 
 class Home(object):
     auth = Auth.AuthController()
+    # main = Main()
 
     @cherrypy.expose
     def index(self):
@@ -20,16 +22,15 @@ class Home(object):
         return tmpl.render(name='John')
 
     @cherrypy.expose
-    def generate(self, length=8):
-        some_string = ''.join(random.sample(string.hexdigits, int(length)))
-        cherrypy.session['mystring'] = some_string
-        tmpl = env.get_template('generator.html')
-        return tmpl.render(string=some_string)
-
-    @cherrypy.expose
     @Auth.require(Auth.name_is("joe"))
     def only_for_joe(self):
         return """Hello Joe - this page is available to you only"""
+
+class Main(object):
+    @cherrypy.expose
+    @Auth.require()
+    def find_matches(self):
+        return "placeholder"
 
 
 if __name__ == '__main__':

@@ -47,16 +47,15 @@ int Parser::parse()
             ++this->comment_style_score[res];
             this->comment_style = true;
         }
+        if ((res = indent_amount::parse_line(current_line)) != indent_amount::FAIL && res != 0)
+        {
+            ++this->indent_amount_score[res];
+            this->indent_amount = true;
+        }
 
         // a bit more complicated
         max_line_length::value result = max_line_length::parse_line(current_line);
         if (result > this->max_line_length_score) this->max_line_length_score = result;
-
-//        indent_amount::value indent_amount_result = indent_amount::parse_line(current_line);
-//        if (indent_amount_result != indent_amount::FAIL)
-//        {
-//            ++this->indent_amount_score;
-//        }
     }
 
     return i;
@@ -82,8 +81,17 @@ Parser::space_or_tab::value Parser::space_or_tab::parse_line(const std::string& 
 
 Parser::indent_amount::value Parser::indent_amount::parse_line(const std::string& line)
 {
+    static const std::regex leading_spaces("^( *)[^ \t].*$");
     static indent_amount::value previous = 0;
-    return -1; //TODO
+    std::smatch spaces_match;
+    if (std::regex_search(line, spaces_match, leading_spaces))
+    {
+        indent_amount::value result = (indent_amount::value)spaces_match[1].length();
+        indent_amount::value difference = (indent_amount::value)std::abs(previous - result);
+        previous = result;
+        return difference;
+    }
+    return indent_amount::FAIL;
 }
 
 Parser::var_convention::value Parser::var_convention::parse_line(const std::string& line)

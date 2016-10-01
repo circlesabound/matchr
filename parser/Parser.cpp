@@ -86,8 +86,8 @@ Parser::indent_amount::value Parser::indent_amount::parse_line(const std::string
     std::smatch spaces_match;
     if (std::regex_search(line, spaces_match, leading_spaces))
     {
-        indent_amount::value result = (indent_amount::value)spaces_match[1].length();
-        indent_amount::value difference = (indent_amount::value)std::abs(previous - result);
+        indent_amount::value result = (indent_amount::value) spaces_match[1].length();
+        indent_amount::value difference = (indent_amount::value) std::abs(previous - result);
         previous = result;
         return difference;
     }
@@ -114,7 +114,7 @@ Parser::var_convention::value Parser::comment_style::parse_line(const std::strin
 
 Parser::max_line_length::value Parser::max_line_length::parse_line(const std::string& line)
 {
-    return (max_line_length::value)line.size();
+    return (max_line_length::value) line.size();
 }
 
 bool element_cmp(const std::pair<const int, int>& lhs, const std::pair<const int, int>& rhs)
@@ -124,27 +124,27 @@ bool element_cmp(const std::pair<const int, int>& lhs, const std::pair<const int
 
 Parser::brace_placement::value Parser::get_brace_placement()
 {
-    if (!this->brace_placement) return brace_placement::FAIL;
-    return std::max_element(
-            this->brace_placement_score.cbegin(),
-            this->brace_placement_score.cend(),
-            &element_cmp
-    )->first;
+    int count = this->brace_placement_score[int(brace_placement::INLINE)] +
+                this->brace_placement_score[int(brace_placement::UNDERNEATH)];
+    int sum = this->brace_placement_score[int(brace_placement::INLINE)] * int(brace_placement::INLINE) +
+              this->brace_placement_score[int(brace_placement::UNDERNEATH)] * int(brace_placement::UNDERNEATH);
+    if (count <= brace_placement::MIN_SAMPLE_SIZE) return sum;
+    else return sum * 20 / count;
 }
 
 Parser::space_or_tab::value Parser::get_space_or_tab()
 {
-    if (!this->space_or_tab) return space_or_tab::FAIL;
-    return std::max_element(
-            this->space_or_tab_score.cbegin(),
-            this->space_or_tab_score.cend(),
-            &element_cmp
-    )->first;
+    int count = this->space_or_tab_score[int(space_or_tab::SPACE)] +
+                this->space_or_tab_score[int(space_or_tab::TAB)];
+    int sum = this->space_or_tab_score[int(space_or_tab::SPACE)] * int(space_or_tab::SPACE) +
+              this->space_or_tab_score[int(space_or_tab::TAB)] * int(space_or_tab::TAB);
+    if (count <= space_or_tab::MIN_SAMPLE_SIZE) return sum;
+    else return sum * 20 / count;
 }
 
 Parser::indent_amount::value Parser::get_indent_amount()
 {
-    if (!this->indent_amount) return indent_amount::FAIL; //TODO
+    if (!this->indent_amount) return indent_amount::FAIL;
     return std::max_element(
             this->indent_amount_score.cbegin(),
             this->indent_amount_score.cend(),
@@ -154,22 +154,22 @@ Parser::indent_amount::value Parser::get_indent_amount()
 
 Parser::var_convention::value Parser::get_var_convention()
 {
-    if (!this->var_convention) return var_convention::FAIL;
-    return std::max_element(
-            this->var_convention_score.cbegin(),
-            this->var_convention_score.cend(),
-            &element_cmp
-    )->first;
+    int count = this->var_convention_score[int(var_convention::CAMELCASE)] +
+                this->var_convention_score[int(var_convention::SNAKECASE)];
+    int sum = this->var_convention_score[int(var_convention::CAMELCASE)] * int(var_convention::CAMELCASE) +
+              this->var_convention_score[int(var_convention::SNAKECASE)] * int(var_convention::SNAKECASE);
+    if (count <= var_convention::MIN_SAMPLE_SIZE) return sum;
+    else return sum * 20 / count;
 }
 
 Parser::comment_style::value Parser::get_comment_style()
 {
-    if (!this->comment_style) return comment_style::FAIL;
-    return std::max_element(
-            this->comment_style_score.cbegin(),
-            this->comment_style_score.cend(),
-            &element_cmp
-    )->first;
+    int count = this->comment_style_score[int(comment_style::BLOCK)] +
+                this->comment_style_score[int(comment_style::LINE)];
+    int sum = this->comment_style_score[int(comment_style::BLOCK)] * int(comment_style::BLOCK) +
+              this->comment_style_score[int(comment_style::LINE)] * int(comment_style::LINE);
+    if (count <= comment_style::MIN_SAMPLE_SIZE) return sum;
+    else return sum * 20 / count;
 }
 
 Parser::max_line_length::value Parser::get_max_line_length()

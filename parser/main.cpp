@@ -11,12 +11,12 @@ int main()
     for (std::string line; std::getline(std::cin, line); ) lines.push_back(line);
     Parser parser(lines);
     json output;
-    output["bracePlacement"] = parser.get_brace_placement();
-    output["spaceOrTab"] = parser.get_space_or_tab();
-    output["indentAmount"] = parser.get_indent_amount();
-    output["varConvention"] = parser.get_var_convention();
-    output["commentStyle"] = parser.get_comment_style();
-    output["maxLineLength"] = parser.get_max_line_length();
+    output["brace_placement"] = parser.get_brace_placement();
+    output["space_or_tab"] = parser.get_space_or_tab();
+    output["indent_amount"] = parser.get_indent_amount();
+    output["var_convention"] = parser.get_var_convention();
+    output["comment_style"] = parser.get_comment_style();
+    output["max_line_length"] = parser.get_max_line_length();
     std::cout << output.dump(4) << std::endl;
     return 0;
 }

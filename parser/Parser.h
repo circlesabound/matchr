@@ -16,8 +16,9 @@ public:
     struct brace_placement
     {
         using value = int;
-        static constexpr brace_placement::value FAIL = -1;
-        static constexpr brace_placement::value INLINE = 0;
+        static constexpr int MIN_SAMPLE_SIZE = 5;
+        static constexpr brace_placement::value FAIL = 0;
+        static constexpr brace_placement::value INLINE = -1;
         static constexpr brace_placement::value UNDERNEATH = 1;
 
         static brace_placement::value parse_line(const std::string& line);
@@ -26,8 +27,9 @@ public:
     struct space_or_tab
     {
         using value = int;
-        static constexpr space_or_tab::value FAIL = -1;
-        static constexpr space_or_tab::value SPACE = 0;
+        static constexpr int MIN_SAMPLE_SIZE = 5;
+        static constexpr space_or_tab::value FAIL = 0;
+        static constexpr space_or_tab::value SPACE = -1;
         static constexpr space_or_tab::value TAB = 1;
 
         static space_or_tab::value parse_line(const std::string& line);
@@ -44,8 +46,9 @@ public:
     struct var_convention
     {
         using value = int;
-        static constexpr var_convention::value FAIL = -1;
-        static constexpr var_convention::value CAMELCASE = 0;
+        static constexpr int MIN_SAMPLE_SIZE = 5;
+        static constexpr var_convention::value FAIL = 0;
+        static constexpr var_convention::value CAMELCASE = -1;
         static constexpr var_convention::value SNAKECASE = 1;
 
         static var_convention::value parse_line(const std::string& line);
@@ -54,8 +57,9 @@ public:
     struct comment_style
     {
         using value = int;
-        static constexpr comment_style::value FAIL = -1;
-        static constexpr comment_style::value LINE = 0;
+        static constexpr int MIN_SAMPLE_SIZE = 5;
+        static constexpr comment_style::value FAIL = 0;
+        static constexpr comment_style::value LINE = -1;
         static constexpr comment_style::value BLOCK = 1;
 
         static var_convention::value parse_line(const std::string& line);

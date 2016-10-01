@@ -2,9 +2,16 @@ body {
   background-color: #700010;
 }
 
+input {
+  color: black;
+}
+
 h1 {
   color: #FFF41F;
 }
 p {
+  color: white;
+}
+label {
   color: white;
 }

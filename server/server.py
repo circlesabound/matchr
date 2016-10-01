@@ -9,10 +9,11 @@ import sys
 
 from jinja2 import Environment, FileSystemLoader
 
-auth = Auth.AuthController()
 env = Environment(loader=FileSystemLoader('public/html'))
 
 class Home(object):
+    auth = Auth.AuthController()
+
     @cherrypy.expose
     def index(self):
         tmpl = env.get_template('index.html')

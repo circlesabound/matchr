@@ -4,16 +4,17 @@ import cherrypy
 import random
 import string
 import os, os.path
+import Auth
 import sys
 
 from jinja2 import Environment, FileSystemLoader
+
+auth = Auth.AuthController()
 env = Environment(loader=FileSystemLoader('public/html'))
 
-class Matchr(object):
+class Home(object):
     @cherrypy.expose
     def index(self):
-        #f = open ('public/html/index.html', 'r') # open does not take cherrypy url
-        #return f.read()
         tmpl = env.get_template('index.html')
         return tmpl.render(name='John')
 
@@ -25,21 +26,25 @@ class Matchr(object):
         return tmpl.render(string=some_string)
 
     @cherrypy.expose
-    def display(self):
-        return cherrypy.session['mystring']
+    @Auth.require(Auth.name_is("joe"))
+    def only_for_joe(self, length):
+        return """Hello Joe - this page is available to you only"""
+
 
 if __name__ == '__main__':
     conf = {
         '/': {
             'tools.sessions.on': True,
-            'tools.staticdir.root': os.path.abspath(os.getcwd())
+            'tools.staticdir.root': os.path.abspath(os.getcwd()),
+            'tools.auth.on': True
         },
         '/static': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': './public'
         }
     }
+
     if len(sys.argv) > 1 and sys.argv[1] == "--web":
         cherrypy.server.socket_port = 80
         cherrypy.server.socket_host = '0.0.0.0'
-    cherrypy.quickstart(Matchr(), '/', conf)
+    cherrypy.quickstart(Home(), '/', conf)

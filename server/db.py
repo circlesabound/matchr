@@ -1,6 +1,9 @@
 import sqlite3
 import hashlib
 import os.path
+import subprocess
+import json
+from io import StringIO
 
 class db(object):
 
@@ -64,6 +67,50 @@ class db(object):
         #TODO
         return None
 
+    def add_new_user_code(self, user_dict, sample_code):
+        """
+        Adds a new user to the database, given their personal details and a piece of sample code to analyse.
+
+        :param user_dict: a dictionary with the following key-value mappings:
+                first_name      =>  <str>
+                last_name       =>  <str>
+                gender          =>  [ None, 'm', 'f' ]
+                image           =>  [ None, <str> ]
+                description     =>  <str>
+                email           =>  <str>
+                password        =>  <str>
+        :param sample_code: <str>
+        :returns: <int> the user id of the newly created user
+        :raises ValueError: if the specified email address already belongs to an existing user
+        :raises KeyError: if there are missing fields in the user dict parameter
+        """
+        # check for existing user
+        try:
+            self.get_id_from_email(user_dict["email"])
+            raise RuntimeError
+        except ValueError:
+            pass # good
+        except RuntimeError:
+            raise ValueError # bad
+        # make external call to parser to parse sample code
+        p = subprocess.Popen(['../parser/parser'],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True)
+        out, err = p.communicate(input=sample_code)
+        results = json.load(StringIO(out))
+        amended_user_dict = dict(user_dict)
+        amended_user_dict["brace_placement"] = results["brace_placement"]
+        amended_user_dict["space_or_tab"] = results["space_or_tab"]
+        amended_user_dict["indent_amount"] = resuts["indent_amount"]
+        amended_user_dict["var_convention"] = results["var_convention"]
+        amended_user_dict["comment_style"] = results["comment_style"]
+        amended_user_dict["max_line_length"] = results["max_line_length"]
+        # delegate to next method
+        self.add_new_user(amended_user_dict)
+        return
+
     def add_new_user(self, user_dict):
         """
         Adds a new user to the database and constructs all required relationship records.
@@ -123,6 +170,13 @@ class db(object):
             raise RuntimeError
 
     def get_id_from_email(self, email):
+        """
+        Returns the unique user id associated with a given email address.
+
+        :param email: <str> an email address
+        :returns: <int> a user id
+        :raises ValueError: if the specified user does not exist in the data
+        """
         c = self.conn.cursor()
         c.execute('''SELECT id
                 FROM users

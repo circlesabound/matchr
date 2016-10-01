@@ -8,6 +8,8 @@ import cherrypy
 import urllib
 import hashlib
 import sqlite3
+from jinja2 import Environment, FileSystemLoader
+env = Environment(loader=FileSystemLoader('public/html')) # Jinja2 environment
 
 SESSION_KEY = '_cp_username'
 
@@ -104,6 +106,8 @@ class AuthController(object):
         """Called on logout"""
     
     def get_loginform(self, username, msg="Enter login information", from_page="/"):
+        tmpl = env.get_template("login.html")
+        return tmpl.render(user = username, message = msg, from_pg = from_page) 
         return """<html><body>
             <form method="post" action="/auth/login">
             <input type="hidden" name="from_page" value="%(from_page)s" />

@@ -11,7 +11,7 @@ if os.path.isfile('matchr.db'):
 conn = sqlite3.connect('matchr.db')
 
 conn.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, fName TEXT, lName TEXT, gender TEXT, 
-    image TEXT, description TEXT, email TEXT, password TEXT, bracePlacement INT, spaceOrTab INT, 
+    image BLOB, description TEXT, email TEXT, password TEXT, bracePlacement INT, spaceOrTab INT, 
     indentAmount INT, varConvention INT, commentStyle INT, maxLineLength INT);''')
 
 conn.execute('''CREATE TABLE relationship (relationshipScore INT, idFirst INT, 

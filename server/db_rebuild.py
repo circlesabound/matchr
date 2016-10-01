@@ -68,6 +68,33 @@ def generateNewUser (conn):
         0, 0, 3, 1, 1, 15);''')
     conn.commit()
 
+def test1():
+    import db
+
+    database = db.db('matchr.db')
+    database.connect()
+    ud = {}
+    ud["first_name"] = "John"
+    ud["last_name"] = "Howard"
+    ud["gender"] = 'm'
+    ud["image"] = None
+    ud["description"] = "I used to be PM"
+    ud["email"] = "j.howard@gov.au"
+    ud["password"] = "maddj"
+    ud["brace_placement"] = -50
+    ud["space_or_tab"] = -50
+    ud["indent_amount"] = 4
+    ud["var_convention"] = -50
+    ud["comment_style"] = -50
+    ud["max_line_length"] = 120
+    try:
+        database.add_new_user(ud)
+        print("welcome john howard")
+    except ValueError:
+        print("John howard already registed")
+    finally:
+        print(database.get_user_details(database.get_id_from_email(ud["email"])))
+
 
 if os.path.isfile('matchr.db'):
     print("removing old db")
@@ -100,3 +127,5 @@ cursor = conn.execute("SELECT Count(*) FROM users")
 print(cursor.fetchall())
 
 conn.close()
+
+test1()

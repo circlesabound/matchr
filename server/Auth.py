@@ -17,6 +17,7 @@ def verify(username, password):
     Returns None on success or a string describing the error on failure"""
     try:
         db = DB.DB("matchr.db")
+        db.connect()
         if db.check_credentials(username, password):
             return None
         else:

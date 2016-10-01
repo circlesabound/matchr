@@ -86,9 +86,53 @@ class db(object):
         :raises ValueError: if the specified email address already belongs to an existing user
         :raises KeyError: if there are missing fields in the user dict parameter
         """
+        # check for existing user
+        try:
+            self.get_id_from_email(user_dict["email"])
+            raise RuntimeError
+        except ValueError:
+            pass # good
+        except RuntimeError:
+            raise ValueError # bad
+        # add user
         c = self.conn.cursor()
-        #TODO
-        return user_id
+        c.execute('''INSERT INTO users
+                (fName, lName, gender, image, description, email, password,
+                bracePlacement, spaceOrTab, indentAmount, varConvention, commentStyle, maxLineLength)
+                VALUES
+                (?, ?, ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?);''',
+                (user_dict["first_name"],
+                    user_dict["last_name"],
+                    user_dict["gender"],
+                    user_dict["image"],
+                    user_dict["description"],
+                    user_dict["email"],
+                    hashlib.sha256(user_dict["password"].encode('utf-8')).hexdigest(),
+                    user_dict["brace_placement"],
+                    user_dict["space_or_tab"],
+                    user_dict["indent_amount"],
+                    user_dict["var_convention"],
+                    user_dict["comment_style"],
+                    user_dict["max_line_length"], ))
+        self.conn.commit()
+        # check for added user
+        try:
+            return self.get_id_from_email(user_dict["email"])
+        except ValueError:
+            raise RuntimeError
+
+    def get_id_from_email(self, email):
+        c = self.conn.cursor()
+        c.execute('''SELECT id
+                FROM users
+                WHERE email=?''',
+                (email, ))
+        result = c.fetchone()
+        if result is None:
+            raise ValueError
+        else:
+            return int(result["id"])
 
     def get_user_details(self, user_id):
         """
@@ -96,13 +140,14 @@ class db(object):
 
         :param user_id: <int> a user id
         :returns: a dictionary with the following key-value mappings:
+                user_id         =>  <int>
                 first_name      =>  <str>
                 last_name       =>  <str>
                 gender          =>  [ None, 'm', 'f' ]
                 image           =>  [ None, <str> ]
                 description     =>  <str>
                 email           =>  <str>
-                password        =>  <str>
+                password_hash   =>  <str>
                 brace_placement =>  <int> #TODO
                 space_or_tab    =>  <int> #TODO
                 indent_amount   =>  <int> #TODO
@@ -115,12 +160,25 @@ class db(object):
         c.execute('''SELECT *
                 FROM users
                 WHERE id=?''',
-                user_id)
+                (user_id, ))
         result = c.fetchone()
         if result is None:
             raise ValueError
         user_dict = {}
-        #TODO
+        user_dict["user_id"] = result["id"]
+        user_dict["first_name"] = result["fName"]
+        user_dict["last_name"] = result["lName"]
+        user_dict["gender"] = result["gender"]
+        user_dict["image"] = result["image"]
+        user_dict["description"] = result["description"]
+        user_dict["email"] = result["email"]
+        user_dict["password_hash"] = result["password"]
+        user_dict["brace_placement"] = result["bracePlacement"]
+        user_dict["space_or_tab"] = result["spaceOrTab"]
+        user_dict["indent_amount"] = result["indentAmount"]
+        user_dict["var_convention"] = result["varConvention"]
+        user_dict["comment_style"] = result["commentStyle"]
+        user_dict["max_line_length"] = result["maxLineLength"]
         return user_dict
 
     def get_compatibility_score(self, user_id_1, user_id_2):

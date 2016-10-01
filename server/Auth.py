@@ -14,7 +14,6 @@ SESSION_KEY = '_cp_username'
 def check_credentials(username, password):
     """Verifies credentials for username and password.
     Returns None on success or a string describing the error on failure"""
-    hashedPass = hashlib.sha256(password).hexdigest()
     if username in ('joe', 'steve') and password == 'secret':
         return None
     else:

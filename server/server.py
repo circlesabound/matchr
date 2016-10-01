@@ -28,7 +28,7 @@ class Home(object):
 
     @cherrypy.expose
     @Auth.require(Auth.name_is("joe"))
-    def only_for_joe(self, length):
+    def only_for_joe(self):
         return """Hello Joe - this page is available to you only"""
 
 

@@ -6,6 +6,7 @@ import string
 import os, os.path
 import sys
 import Auth
+import Main
 import DB
 
 from jinja2 import Environment, FileSystemLoader
@@ -14,23 +15,13 @@ env = Environment(loader=FileSystemLoader('public/html'))
 
 class Home(object):
     auth = Auth.AuthController()
-    # main = Main()
+    main = Main.MainController()
 
     @cherrypy.expose
     def index(self):
         tmpl = env.get_template('index.html')
         return tmpl.render(name='John')
 
-    @cherrypy.expose
-    @Auth.require(Auth.name_is("joe"))
-    def only_for_joe(self):
-        return """Hello Joe - this page is available to you only"""
-
-class Main(object):
-    @cherrypy.expose
-    @Auth.require()
-    def find_matches(self):
-        return "placeholder"
 
 
 if __name__ == '__main__':

@@ -14,18 +14,18 @@ SESSION_KEY = '_cp_username'
 
 def verify(username, password):
     """Verifies credentials for username and password.
-    Returns None on success or a string describing the error on failure"""
+    Returns user ID on success or a string describing the error on failure"""
     try:
         db = DB.DB("matchr.db")
         db.connect()
-        if db.check_credentials(username, password):
-            return None
+        userID = db.check_credentials(username, password)
+        db.close()
+        if userID:
+            return userID
         else:
-            return u"Incorrect username or password."
+            raise ValueError("Incorrect username or password")
     except RuntimeError:
         return "Could not open database"
-    else:
-        db.close()
 
 def check_auth(*args, **kwargs):
     """A tool that looks in config for 'auth.require'. If found and it
@@ -99,7 +99,15 @@ def all_of(*conditions):
 class AuthController(object):
     
     def on_login(self, username):
-        """Called on successful login"""
+        try:
+            db = DB.DB("matchr.db")
+            db.connect()
+            userID = cherrypy.session[SESSION_KEY]
+            cherrypy.session['user_details'] = db.get_user_details(userID)
+        except ValueError:
+            raise ValueError("Could not find user details")
+        except RuntimeError:
+            raise ValueError("Could not open database")
     
     def on_logout(self, username):
         """Called on logout"""
@@ -121,13 +129,13 @@ class AuthController(object):
         if username is None or password is None:
             return self.get_loginform("", from_page=from_page)
         
-        error_msg = verify(username, password)
-        if error_msg:
-            return self.get_loginform(username, error_msg, from_page)
-        else:
-            cherrypy.session[SESSION_KEY] = cherrypy.request.login = username
-            self.on_login(username)
+        try:
+            userID = verify(username, password)
+            cherrypy.session[SESSION_KEY] = cherrypy.request.login = userID
+            self.on_login(userID)
             raise cherrypy.HTTPRedirect(from_page or "/")
+        except ValueError as e:
+            return self.get_loginform(username, e.args, from_page)
     
     @cherrypy.expose
     def logout(self, from_page="/"):

@@ -15,3 +15,7 @@ p {
 label {
   color: white;
 }
+
+.navbar-img {
+    max-height: 25px;
+}

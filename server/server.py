@@ -5,27 +5,25 @@ import random
 import string
 import os, os.path
 import Auth
+import sys
+
+from jinja2 import Environment, FileSystemLoader
+
+auth = Auth.AuthController()
+env = Environment(loader=FileSystemLoader('public/html'))
 
 class Home(object):
-    auth = Auth.AuthController()
-
     @cherrypy.expose
     def index(self):
-        return """<html>
-          <head>
-            <link href="/static/css/style.css" rel="stylesheet">
-          </head>
-          <body>
-            <form method="get" action="only_for_joe">
-              <input type="text" value="8" name="length" />
-              <button type="submit">Give it now!</button>
-            </form>
-          </body>
-        </html>"""
+        tmpl = env.get_template('index.html')
+        return tmpl.render(name='John')
 
     @cherrypy.expose
-    def open(self, length=8):
-        return """This page is open to everyone"""
+    def generate(self, length=8):
+        some_string = ''.join(random.sample(string.hexdigits, int(length)))
+        cherrypy.session['mystring'] = some_string
+        tmpl = env.get_template('generator.html')
+        return tmpl.render(string=some_string)
 
     @cherrypy.expose
     @Auth.require(Auth.name_is("joe"))
@@ -46,5 +44,7 @@ if __name__ == '__main__':
         }
     }
 
-
+    if len(sys.argv) > 1 and sys.argv[1] == "--web":
+        cherrypy.server.socket_port = 80
+        cherrypy.server.socket_host = '0.0.0.0'
     cherrypy.quickstart(Home(), '/', conf)

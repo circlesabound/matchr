@@ -33,7 +33,7 @@ def check_auth(*args, **kwargs):
     conditions that the user must fulfill"""
     conditions = cherrypy.request.config.get('auth.require', None)
     # format GET params
-    get_parmas = urllib.quote(cherrypy.request.request_line.split()[1])
+    get_parmas = urllib.parse.quote(cherrypy.request.request_line.split()[1])
     if conditions is not None:
         username = cherrypy.session.get(SESSION_KEY)
         if username:

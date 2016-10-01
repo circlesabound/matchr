@@ -69,9 +69,9 @@ def generateNewUser (conn):
     conn.commit()
 
 def test1():
-    import db
+    import DB
 
-    database = db.db('matchr.db')
+    database = DB.db('matchr.db')
     database.connect()
     ud = {}
     ud["first_name"] = "John"

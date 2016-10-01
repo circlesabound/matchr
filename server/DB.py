@@ -5,7 +5,7 @@ import subprocess
 import json
 from io import StringIO
 
-class db(object):
+class DB(object):
 
     def __init__(self, db_path):
         if not os.path.isfile(db_path):
@@ -101,12 +101,7 @@ class db(object):
         out, err = p.communicate(input=sample_code)
         results = json.load(StringIO(out))
         amended_user_dict = dict(user_dict)
-        amended_user_dict["brace_placement"] = results["brace_placement"]
-        amended_user_dict["space_or_tab"] = results["space_or_tab"]
-        amended_user_dict["indent_amount"] = resuts["indent_amount"]
-        amended_user_dict["var_convention"] = results["var_convention"]
-        amended_user_dict["comment_style"] = results["comment_style"]
-        amended_user_dict["max_line_length"] = results["max_line_length"]
+        amended_user_dict.update(results)
         # delegate to next method
         self.add_new_user(amended_user_dict)
         return
@@ -165,9 +160,11 @@ class db(object):
         self.conn.commit()
         # check for added user
         try:
-            return self.get_id_from_email(user_dict["email"])
+            user_id = self.get_id_from_email(user_dict["email"])
         except ValueError:
             raise RuntimeError
+        # create relationships with all existing users
+        #TODO
 
     def get_id_from_email(self, email):
         """

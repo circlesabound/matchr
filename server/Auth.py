@@ -6,7 +6,7 @@
 
 import cherrypy
 import urllib
-import db
+import DB
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('public/html')) # Jinja2 environment
 
@@ -15,11 +15,16 @@ SESSION_KEY = '_cp_username'
 def verify(username, password):
     """Verifies credentials for username and password.
     Returns None on success or a string describing the error on failure"""
-    db = DB.db()
-    if db.check_credentials(username, password):
-        return None
+    try:
+        db = DB.DB("matchr.db")
+        if db.check_credentials(username, password):
+            return None
+        else:
+            return u"Incorrect username or password."
+    except RuntimeError:
+        return "Could not open database"
     else:
-        return u"Incorrect username or password."
+        db.close()
 
 def check_auth(*args, **kwargs):
     """A tool that looks in config for 'auth.require'. If found and it

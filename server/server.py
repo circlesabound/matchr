@@ -6,7 +6,7 @@ import string
 import os, os.path
 import sys
 import Auth
-import db
+import DB
 
 from jinja2 import Environment, FileSystemLoader
 

@@ -27,12 +27,9 @@ class DB(object):
     def close(self):
         """
         Closes the connection to the database.
-
-        :raises RuntimeError: if there is no currently open database connection
         """
-        if self.conn is None:
-            raise RuntimeError
-        self.conn.close()
+        if self.conn is not None:
+            self.conn.close()
         self.conn = None
 
     def check_credentials(self, email, password):

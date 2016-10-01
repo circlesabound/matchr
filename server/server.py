@@ -8,17 +8,8 @@ import os, os.path
 class Matchr(object):
     @cherrypy.expose
     def index(self):
-        return """<html>
-          <head>
-            <link href="/static/css/style.css" rel="stylesheet">
-          </head>
-          <body>
-            <form method="get" action="generate">
-              <input type="text" value="8" name="length" />
-              <button type="submit">Give it now!</button>
-            </form>
-          </body>
-        </html>"""
+        f = open ('public/html/index.html', 'r') # open does not take cherrypy url
+        return f.read()
 
     @cherrypy.expose
     def generate(self, length=8):

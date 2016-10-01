@@ -103,8 +103,7 @@ class DB(object):
         amended_user_dict = dict(user_dict)
         amended_user_dict.update(results)
         # delegate to next method
-        self.add_new_user(amended_user_dict)
-        return
+        return self.add_new_user(amended_user_dict)
 
     def add_new_user(self, user_dict):
         """
@@ -165,6 +164,7 @@ class DB(object):
             raise RuntimeError
         # create relationships with all existing users
         #TODO
+        return user_id
 
     def get_id_from_email(self, email):
         """

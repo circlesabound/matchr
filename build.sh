@@ -13,7 +13,7 @@ cmake .
 make
 mv "parser" "../out/parser"
 
-cd "$(pwd)"
+cd ".."
 
 echo "Making server"
 cd "$SERVERDIR"

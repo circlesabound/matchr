@@ -31,7 +31,14 @@ print("db created")
 
 conn.close()
 
-def functionName (arg1):
+#function call order
+#1) generateFirstUsers()
+#2) generateNewUser()
+#3) generateRelationships()
+
+#generates relationships with all existing users
+def generateRelationships ():
+    #assuming this is called right after latest user created - get latest user
     cursor = conn.execute('''SELECT id, bracePlacement, spaceOrTab, indentAmount, varConvention, commentStyle, maxLineLength 
         FROM users WHERE email = ?;''', email)
     for row in cursor:
@@ -57,5 +64,33 @@ def functionName (arg1):
             score += 1
         if row[6] == maxLineLength:
             score += 1
-    conn.execute('''INSERT INTO relationship (relationshipScore, idFirst, idSecond, statusFirst, statusSecond) values (?, ?, ?, ?, ?)''')
-    
+        #insert calculated score, id of latest user in earlier query which is 'first' user, row[0] which is id of 'second' user
+        conn.execute('''INSERT INTO relationship (relationshipScore, idFirst, idSecond) values (?, ?, ?, ?, ?);''', (score, id, row[0]))    
+
+def generateFirstUsers ():
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES ('James', 'Smith', 'm', 'dfs', 'hi', 'a@a.com', 'asd', -50, 4, 4, 1, 1, 45);''')
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES ('Jane', 'Jones', 'f', 'dfs', 'asd', 'b@b.com', 'bsd', -100, 0, 4, 1, 1, 45);''')
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES ('Janet', 'Jacob', 'f', 'qwe', 'asd', 'c@c.com', 'bsd', 0, 0, 3, 1, 1, 45);''')
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES ('Kathy', 'Kim', 'f', 'rty', 'jkd', 'd@d.com', 'bsd', -30, 1, 2, 1, 1, 45);''')
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES ('Lisa', 'Jones', 'f', 'testing', 'lmd', 'e@e.com', 'bsd', -70, 0, 4, 0, 1, 45);''')
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES ('Philip', 'Skat', 'm', 'checking', 'nads', 'f@f.com', 'bsd', 40, 0, 4, 1, 0, 45);''')
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES ('Karen', 'Rea', 'f', 'dfs', 'work', 'g@g.com', 'bsd', 55, 0, 4, 1, 0, 55);''')
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES ('Pam', 'Manthrey', 'f', 'slate', 'dfsa', 'h@h.com', 'bsd', 70, 1, 4, 0, 0, 30);''')
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES ('Trisha', 'Kam', 'f', 'dka', 'enm', 'i@i.com', 'bsd', 80, 0, 3, 0, 1, 25);''')
+
+def generateNewUser ():
+    conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+        varConvention, commentStyle, maxLineLength) VALUES ('Sarah', 'Adam', 'f', 'csad', 'i love code', 'j@j.com', 'bsd', 0, 0, 3, 1, 1, 15);''')
+
+
+
+

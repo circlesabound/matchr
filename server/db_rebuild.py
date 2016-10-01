@@ -4,40 +4,13 @@ import sqlite3
 import os.path
 import os
 
-if os.path.isfile('matchr.db'):
-    print("removing old db")
-    os.remove('matchr.db')
-
-conn = sqlite3.connect('matchr.db')
-
-conn.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, fName TEXT, lName TEXT, gender TEXT, 
-    image BLOB, description TEXT, email TEXT, password TEXT, bracePlacement INT, spaceOrTab INT, 
-    indentAmount INT, varConvention INT, commentStyle INT, maxLineLength INT);''')
-
-conn.execute('''CREATE TABLE relationship (relationshipScore INT, idFirst INT, 
-    idSecond INT, statusFirst INT, statusSecond INT);''')
-
-currentSession = (None,)
-conn.execute('''SELECT idSecond FROM relationship WHERE statusFirst = NULL AND idFirst = ? ORDER BY relationshipScore DESC;''', currentSession)
-conn.execute('''SELECT idFirst FROM relationship WHERE statusSecond = NULL AND idSecond = ? ORDER BY relationshipScore DESC;''', currentSession)
-
-"""
-conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
-    varConvention, commentStyle, maxLineLength) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''', (fName, lName, gender, image, description, 
-    email, password, bracePlacement, spaceOrTab, indentAmount, varConvention, commentStyle, maxLineLength))
-"""
-
-print("db created")
-
-conn.close()
-
 #function call order
 #1) generateFirstUsers()
 #2) generateNewUser()
 #3) generateRelationships()
 
 #generates relationships with all existing users
-def generateRelationships ():
+def generateRelationships (conn):
     #assuming this is called right after latest user created - get latest user
     cursor = conn.execute('''SELECT id, bracePlacement, spaceOrTab, indentAmount, varConvention, commentStyle, maxLineLength 
         FROM users WHERE email = ?;''', email)
@@ -67,7 +40,7 @@ def generateRelationships ():
         #insert calculated score, id of latest user in earlier query which is 'first' user, row[0] which is id of 'second' user
         conn.execute('''INSERT INTO relationship (relationshipScore, idFirst, idSecond) values (?, ?, ?, ?, ?);''', (score, id, row[0]))    
 
-def generateFirstUsers ():
+def generateFirstUsers (conn):
     conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
     varConvention, commentStyle, maxLineLength) VALUES ('James', 'Smith', 'm', 'dfs', 'hi', 'a@a.com', 'asd', -50, 4, 4, 1, 1, 45);''')
     conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
@@ -87,10 +60,43 @@ def generateFirstUsers ():
     conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
     varConvention, commentStyle, maxLineLength) VALUES ('Trisha', 'Kam', 'f', 'dka', 'enm', 'i@i.com', 'bsd', 80, 0, 3, 0, 1, 25);''')
 
-def generateNewUser ():
+def generateNewUser (conn):
+    # plain text password is "asdf"
     conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
-        varConvention, commentStyle, maxLineLength) VALUES ('Sarah', 'Adam', 'f', 'csad', 'i love code', 'j@j.com', 'bsd', 0, 0, 3, 1, 1, 15);''')
+        varConvention, commentStyle, maxLineLength) VALUES ('Sarah', 'Adam', 'f', 'csad', 'i love code', 'j@j.com',
+        'f0e4c2f76c58916ec258f246851bea091d14d4247a2fc3e18694461b1816e13b',
+        0, 0, 3, 1, 1, 15);''')
+    conn.commit()
 
 
+if os.path.isfile('matchr.db'):
+    print("removing old db")
+    os.remove('matchr.db')
 
+conn = sqlite3.connect('matchr.db')
 
+conn.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, fName TEXT, lName TEXT, gender TEXT, 
+    image BLOB, description TEXT, email TEXT, password TEXT, bracePlacement INT, spaceOrTab INT, 
+    indentAmount INT, varConvention INT, commentStyle INT, maxLineLength INT);''')
+
+conn.execute('''CREATE TABLE relationship (relationshipScore INT, idFirst INT, 
+    idSecond INT, statusFirst INT, statusSecond INT);''')
+
+currentSession = (None,)
+conn.execute('''SELECT idSecond FROM relationship WHERE statusFirst = NULL AND idFirst = ? ORDER BY relationshipScore DESC;''', currentSession)
+conn.execute('''SELECT idFirst FROM relationship WHERE statusSecond = NULL AND idSecond = ? ORDER BY relationshipScore DESC;''', currentSession)
+
+"""
+conn.execute('''INSERT INTO users (fName, lName, gender, image, description, email, password, bracePlacement, spaceOrTab, indentAmount, 
+    varConvention, commentStyle, maxLineLength) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''', (fName, lName, gender, image, description, 
+    email, password, bracePlacement, spaceOrTab, indentAmount, varConvention, commentStyle, maxLineLength))
+"""
+
+print("db created")
+
+generateNewUser(conn)
+
+cursor = conn.execute("SELECT Count(*) FROM users")
+print(cursor.fetchall())
+
+conn.close()

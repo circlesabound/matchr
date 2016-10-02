@@ -58,11 +58,37 @@ class DB(object):
         Finds the next matched user for the specified user.
 
         :param user_id: <int> a user id
-        :returns: [ None, <int> ] the user id of the next matched user if one exists, otherwise None
+        :returns: [ None, (<int>, <int>) ] the user id and relationship score of the next matched user if one exists, otherwise None
         :raises ValueError: if the specified user does not exist in the database
         """
-        #TODO
-        return None
+        print(user_id)
+        c = self.conn.cursor()
+        c.execute('''SELECT idSecond, relationshipScore
+            FROM relationship
+            WHERE idFirst=? AND statusFirst is NULL
+            ORDER BY relationshipScore DESC''',
+            (user_id, ))
+        result1 = c.fetchone()
+        print(result1)
+        c = self.conn.cursor()
+        c.execute('''SELECT idFirst, relationshipScore
+            FROM relationship
+            WHERE idSecond=? AND statusSecond is NULL
+            ORDER BY relationshipScore DESC''',
+            (user_id, ))
+        result2 = c.fetchone()
+        print(result2)
+        if result1 is not None and result2 is not None:
+            if result1["relationshipScore"] >= result2["relationshipScore"]:
+                return (result1["idSecond"], result1["relationshipScore"])
+            else:
+                return (result2["idSecond"], result2["relationshipScore"])
+        elif result1 is not None:
+            return (result1["idSecond"], result1["relationshipScore"])
+        elif result2 is not None:
+            return (result2["idFirst"], result2["relationshipScore"])
+        else:
+            return None
 
     def add_new_user_code(self, user_dict, sample_code):
         """
@@ -264,7 +290,10 @@ class DB(object):
         user_dict["first_name"] = result["fName"]
         user_dict["last_name"] = result["lName"]
         user_dict["gender"] = result["gender"]
-        user_dict["image"] = str(result["image"], 'utf-8')
+        if result["image"] is None:
+            user_dict["image"] = None
+        else:
+            user_dict["image"] = str(result["image"], 'utf-8')
         user_dict["description"] = result["description"]
         user_dict["email"] = result["email"]
         user_dict["password_hash"] = result["password"]

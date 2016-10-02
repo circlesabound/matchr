@@ -19,10 +19,14 @@ class Home(object):
 
     @cherrypy.expose
     def index(self):
-        tmpl = env.get_template('index.html')
-        return tmpl.render(name='John')
-
-
+        try:
+            if cherrypy.session[Auth.SESSION_KEY] is not None:
+                raise cherrypy.HTTPRedirect("/main/matcher")
+            else:
+                raise KeyError
+        except KeyError:
+            tmpl = env.get_template('index.html')
+            return tmpl.render(name='John')
 
 if __name__ == '__main__':
     conf = {

@@ -135,7 +135,7 @@ class AuthController(object):
             self.on_login(userID)
             raise cherrypy.HTTPRedirect(from_page or "/")
         except ValueError as e:
-            return self.get_loginform(username, e.args, from_page)
+            return self.get_loginform(username, e.args[0], from_page)
     
     @cherrypy.expose
     def logout(self, from_page="/"):

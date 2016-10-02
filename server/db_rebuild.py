@@ -114,17 +114,17 @@ conn.execute('''INSERT INTO users (fName, lName, gender, image, description, ema
 
 print("db created")
 
-generateFirstUsers(conn)
+# generateFirstUsers(conn)
 
-generateNewUser(conn)
+# generateNewUser(conn)
 
-generateRelationships(conn)
+# generateRelationships(conn)
 
-cursor = conn.execute('''SELECT idSecond FROM relationship WHERE statusFirst = NULL AND idFirst = ? ORDER BY relationshipScore DESC;''', currentSession)
-print(cursor.fetchall())
-cursor = conn.execute('''SELECT idFirst FROM relationship WHERE statusSecond = NULL AND idSecond = ? ORDER BY relationshipScore DESC;''', currentSession)
-print(cursor.fetchall())
-cursor = conn.execute("SELECT Count(*) FROM users")
-print(cursor.fetchall())
+# cursor = conn.execute('''SELECT idSecond FROM relationship WHERE statusFirst = NULL AND idFirst = ? ORDER BY relationshipScore DESC;''', currentSession)
+# print(cursor.fetchall())
+# cursor = conn.execute('''SELECT idFirst FROM relationship WHERE statusSecond = NULL AND idSecond = ? ORDER BY relationshipScore DESC;''', currentSession)
+# print(cursor.fetchall())
+# cursor = conn.execute("SELECT Count(*) FROM users")
+# print(cursor.fetchall())
 
 conn.close()

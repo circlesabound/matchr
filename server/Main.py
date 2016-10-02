@@ -9,6 +9,15 @@ class MainController(object):
     @Auth.require()
     def matcher(self):
         tmpl = env.get_template('matcher.html')
-        # encodedImage = cherrypy.session['user_details']['image']
-        # return tmpl.render(image=encodedImage)
-        return tmpl.render()
+        user_details = cherrypy.session['user_details']
+        gender = ""
+        if user_details["gender"] is not None:
+        	gender = user_details["gender"].upper()
+        return tmpl.render(
+        	first_name=user_details['first_name'],
+        	last_name=user_details['last_name'],
+        	age="",
+        	gender=gender,
+        	image=user_details['image'],
+        	description=user_details['description']
+        )

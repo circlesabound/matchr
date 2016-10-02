@@ -61,7 +61,6 @@ class DB(object):
         :returns: [ None, (<int>, <int>) ] the user id and relationship score of the next matched user if one exists, otherwise None
         :raises ValueError: if the specified user does not exist in the database
         """
-        print(user_id)
         c = self.conn.cursor()
         c.execute('''SELECT idSecond, relationshipScore
             FROM relationship
@@ -69,7 +68,6 @@ class DB(object):
             ORDER BY relationshipScore DESC''',
             (user_id, ))
         result1 = c.fetchone()
-        print(result1)
         c = self.conn.cursor()
         c.execute('''SELECT idFirst, relationshipScore
             FROM relationship
@@ -77,7 +75,6 @@ class DB(object):
             ORDER BY relationshipScore DESC''',
             (user_id, ))
         result2 = c.fetchone()
-        print(result2)
         if result1 is not None and result2 is not None:
             if result1["relationshipScore"] >= result2["relationshipScore"]:
                 return (result1["idSecond"], result1["relationshipScore"])

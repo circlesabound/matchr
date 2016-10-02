@@ -53,8 +53,67 @@ public static void main(String args[])
         print(user_id)
     return
 
+def create_if_not_exists_tony_abbott(db):
+    ud = {}
+    ud["first_name"] = "Tony"
+    ud["last_name"] = "Abbott"
+    ud["gender"] = 'm'
+    ud["image"] = None
+    ud["description"] = "I used to be PM"
+    ud["email"] = "t.abbott@gov.au"
+    ud["password"] = "onions"
+    code = '''
+for ($i = 0; $i < 5; $i++) {
+    print "Hello World, I Love Perl!"
+}
+'''
+    try:
+        user_id = db.add_new_user_code(ud, code)
+        print("Created new user Tony Abbott with id {}".format(user_id))
+    except ValueError:
+        user_id = db.get_id_from_email(ud["email"])
+        print("User Tony Abbott already exists with id {}".format(user_id))
+    finally:
+        print(user_id)
+    return
+
+def create_if_not_exists_donald_trump(db):
+    ud = {}
+    ud["first_name"] = "Donald"
+    ud["last_name"] = "Trump"
+    ud["gender"] = 'm'
+    ud["image"] = None
+    ud["description"] = "I'm rich"
+    ud["email"] = "donald@trump.com"
+    ud["password"] = "ivanka"
+    code = '''
+public class WallFactory
+{
+    public WallFactory()
+    {
+        // let other people do it
+    }
+
+    public int build(Country borderingCountry)
+    {
+        return 0; // they pay for it, not us
+    }
+}
+'''
+    try:
+        user_id = db.add_new_user_code(ud, code)
+        print("Created new user Donald Trump with id {}".format(user_id))
+    except ValueError:
+        user_id = db.get_id_from_email(ud["email"])
+        print("User Donald Trump already exists with id {}".format(user_id))
+    finally:
+        print(user_id)
+    return
+
 db = DB.DB('matchr.db')
 db.connect()
 create_if_not_exists_john_howard(db)
 create_if_not_exists_julia_gillard(db)
+create_if_not_exists_tony_abbott(db)
+create_if_not_exists_donald_trump(db)
 db.close()

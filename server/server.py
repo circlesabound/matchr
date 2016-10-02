@@ -26,7 +26,7 @@ class Home(object):
                 raise KeyError
         except KeyError:
             tmpl = env.get_template('index.html')
-            return tmpl.render(name='John')
+            return tmpl.render(hero_image='hero_image.jpeg')
 
 if __name__ == '__main__':
     conf = {

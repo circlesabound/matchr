@@ -1,0 +1,35 @@
+/* container 100& width background */
+.hero-image-container {
+	background:url(../img/hero_image.jpg);
+	background-size: cover;
+	opacity: 0.85;
+	padding-top: 11%;
+	padding-bottom: 11%;
+}
+
+/* overriding bootstrap padding and margins */
+.container-hero {padding:0;}
+.row-hero {margin:0;}
+
+.hero-image {
+width: 100%; 
+display: inline-block; 
+vertical-align: middle; 
+color: transparent; 
+background-size: 100%; 
+background-position: 50% 50%; 
+background-repeat: no-repeat;
+}
+
+.navbar-img {
+	max-height: 25px;
+}
+
+.transparent {
+	background: rgba(0, 0, 0, 0);
+	color: black
+}
+
+.navbar {
+	margin-bottom: 0px;
+}

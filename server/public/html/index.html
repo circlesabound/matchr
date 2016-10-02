@@ -1,17 +1,21 @@
 {% extends "index_base.html" %}
 {% block content %}
-  <div class="container-fluid">
-    <div class="center-block">
-      <div class="col-lg-12">
-        <h1>Matchr</h1>
-        <p>Hello {{name}}</p>
-      </div>
-      <div class="col-md-4">
-        <form method="get" class="form-group" action="/main/matcher">
-          <button type="submit" class="btn btn-danger">Login</button>
-        </form>
+
+    <div class="hero-image-container">
+      <div class="container container-hero">
+        <span class="row row-hero hero-image"></span>
+
+        <div class="jumbotron transparent">
+          <h1>Matchr</h1>
+          <p class="lead">The premier dating website for software developers</p>
+          <p>
+            <form method="get" class="form-group" action="main/signup">
+              <button type="submit" class="btn btn-lg btn-danger">Sign up to find your soulmate today!</button>
+            </form>
+          </p>
+        </div>
       </div>
 
     </div>
-  </div>
+
 {% endblock %}

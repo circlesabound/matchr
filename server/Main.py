@@ -12,3 +12,11 @@ class MainController(object):
         # encodedImage = cherrypy.session['user_details']['image']
         # return tmpl.render(image=encodedImage)
         return tmpl.render()
+
+    @cherrypy.expose
+    def signup(self):
+        tmpl = env.get_template('signup.html')
+        return tmpl.render()
+
+    def register(self):
+        pass

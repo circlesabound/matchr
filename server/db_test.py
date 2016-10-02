@@ -24,7 +24,6 @@ int main() {
         print("User John Howard already exists with id {}".format(user_id))
     finally:
         print(user_id)
-        print(db.get_user_details(user_id))
     return
 
 db = DB.DB('matchr.db')

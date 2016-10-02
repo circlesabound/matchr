@@ -160,7 +160,22 @@ class DB(object):
         except ValueError:
             raise RuntimeError
         # create relationships with all existing users
-        #TODO
+        c = self.conn.cursor()
+        c.execute('''SELECT id
+            FROM users
+            WHERE id!=?''',
+            (user_id, ))
+        for (other_id, ) in c.fetchall():
+            c = self.conn.cursor()
+            relationship_score = 0 #TODO
+            c.execute('''INSERT INTO relationships
+                (relationshipScore, idFirst, idSecond)
+                VALUES
+                (?, ?, ?)''',
+                (relationship_score,
+                    user_id,
+                    other_id, ))
+            c.commit()
         return user_id
 
     def get_id_from_email(self, email):
@@ -237,7 +252,7 @@ class DB(object):
         :param user_id_2: <int> a user id
         :returns: <int> a compatibility score #TODO
         :raises ValueError: if either specified user does not exist in the database
-        :raises RuntimError: if a relationship record between the two specified users cannot be found
+        :raises RuntimeError: if a relationship record between the two specified users cannot be found
         """
         #TODO
         return compatibility_score

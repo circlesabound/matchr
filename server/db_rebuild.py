@@ -31,7 +31,7 @@ def generateRelationships (conn):
         indentAmountDifference = min(indentAmount - row[3], 40)
         varConventionDifference = abs(varConvention - row[4])
         commentStyleDifference = abs(commentStyle - row[5])
-        maxLineLengthDifference = min(maxLineLength - row[6], 40)
+        maxLineLengthDifference = min(maxLineLength - row[6], 100)
 
         if (braceDifference == 0):
             braceDifference += 1

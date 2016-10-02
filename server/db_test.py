@@ -26,7 +26,35 @@ int main() {
         print(user_id)
     return
 
+def create_if_not_exists_julia_gillard(db):
+    ud = {}
+    ud["first_name"] = "Julia"
+    ud["last_name"] = "Gillard"
+    ud["gender"] = 'm'
+    ud["image"] = None
+    ud["description"] = "I used to be PM"
+    ud["email"] = "j.gillard@gov.au"
+    ud["password"] = "ranga"
+    code = '''
+public static void main(String args[])
+{
+    System.out.println("Hello World");
+    int retVal = 0;
+    return retVal;
+}
+'''
+    try:
+        user_id = db.add_new_user_code(ud, code)
+        print("Created new user Julia Gillard with id {}".format(user_id))
+    except ValueError:
+        user_id = db.get_id_from_email(ud["email"])
+        print("User Julia Gillard already exists with id {}".format(user_id))
+    finally:
+        print(user_id)
+    return
+
 db = DB.DB('matchr.db')
 db.connect()
 create_if_not_exists_john_howard(db)
+create_if_not_exists_julia_gillard(db)
 db.close()

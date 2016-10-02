@@ -161,21 +161,53 @@ class DB(object):
             raise RuntimeError
         # create relationships with all existing users
         c = self.conn.cursor()
-        c.execute('''SELECT id
+        c.execute('''SELECT id, bracePlacement, spaceOrTab, indentAmount, varConvention, commentStyle, maxLineLength
             FROM users
             WHERE id!=?''',
             (user_id, ))
-        for (other_id, ) in c.fetchall():
-            c = self.conn.cursor()
-            relationship_score = 0 #TODO
-            c.execute('''INSERT INTO relationships
+        for row in c.fetchall():
+            score = 0
+            braceDifference = abs(user_dict["brace_placement"] - row[1])
+            spaceOrTabDifference = abs(user_dict["space_or_tab"] - row[2])
+            indentAmountDifference = min(user_dict["indent_amount"] - row[3], 40)
+            varConventionDifference = abs(user_dict["var_convention"] - row[4])
+            commentStyleDifference = abs(user_dict["comment_style"] - row[5])
+            maxLineLengthDifference = min(user_dict["max_line_length"] - row[6], 100)
+
+            if (braceDifference == 0):
+                braceDifference += 1
+
+            if (spaceOrTabDifference == 0):
+                spaceOrTabDifference += 1
+
+            if (indentAmountDifference == 0):
+                indentAmountDifference += 1
+
+            if (varConventionDifference == 0):
+                varConventionDifference += 1
+
+            if (commentStyleDifference == 0):
+                commentStyleDifference += 1
+
+            if (maxLineLengthDifference == 0):
+                maxLineLengthDifference += 1
+
+            score += 1/(braceDifference) * 30
+            score += 1/(spaceOrTabDifference) * 30
+            score += 1/(indentAmountDifference) * 15
+            score += 1/(varConventionDifference) * 15
+            score += 1/(commentStyleDifference) * 5
+            score += 1/(maxLineLengthDifference) * 5
+            score = int(round(score))
+            cur = self.conn.cursor()
+            cur.execute('''INSERT INTO relationship
                 (relationshipScore, idFirst, idSecond)
                 VALUES
                 (?, ?, ?)''',
-                (relationship_score,
+                (score,
                     user_id,
-                    other_id, ))
-            c.commit()
+                    row['id'], ))
+        self.conn.commit()
         return user_id
 
     def get_id_from_email(self, email):

@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container col-md-3 nopadding">
-    <div class="decline-button full-height">
-        Reject!
-    </div>
+    <a href="/main/reject">
+        <div class="decline-button full-height" onclick="">
+            <div class="vertical-center some-padding">
+                <img src="/static/img/swipeleft.png" height="75px" width="75px" align="middle">
+            </div>
+        </div>
+    </a>
 </div>
 <div class="container top-padding col-md-6">
     <div class="panel panel-default">
@@ -22,8 +26,12 @@
     </div>
 </div>
 <div class="container col-md-3 nopadding">
-    <div class="accept-button full-height">
-        Match!
-    </div>
+    <a href="/main/accept">
+        <div class="accept-button full-height">
+            <div class="vertical-center some-padding">
+                <img src="/static/img/swiperight.png" height="75px" width="75px">
+            </div>
+        </div>
+    </a>
 </div>
 {% endblock %}

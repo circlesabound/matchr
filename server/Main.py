@@ -16,6 +16,7 @@ class MainController(object):
         (match_id, match_score) = result
         match_details = db.get_user_details(match_id)
         db.close()
+        cherrypy.session['looking_at'] = match_id
         tmpl = env.get_template('matcher.html')
         gender = ""
         if match_details["gender"] is not None:
@@ -32,4 +33,23 @@ class MainController(object):
     @cherrypy.expose
     @Auth.require()
     def reject(self):
-        pass
+        db = DB.DB('matchr.db')
+        user_id = cherrypy.session['user_details']['user_id']
+        match_id = cherrypy.session['looking_at']
+        db = DB.DB('matchr.db')
+        db.connect()
+        db.set_relationship_status(user_id, "rejects", match_id)
+        db.close()
+        raise cherrypy.HTTPRedirect('/main/matcher')
+
+    @cherrypy.expose
+    @Auth.require()
+    def accept(self):
+        db = DB.DB('matchr.db')
+        user_id = cherrypy.session['user_details']['user_id']
+        match_id = cherrypy.session['looking_at']
+        db = DB.DB('matchr.db')
+        db.connect()
+        db.set_relationship_status(user_id, "accepts", match_id)
+        db.close()
+        raise cherrypy.HTTPRedirect('/main/matcher')

@@ -305,19 +305,6 @@ class DB(object):
         user_dict["max_line_length"] = result["maxLineLength"]
         return user_dict
 
-    def get_compatibility_score(self, user_id_1, user_id_2):
-        """
-        Returns the compatibility score between the two specified users.
-
-        :param user_id_1: <int> a user id
-        :param user_id_2: <int> a user id
-        :returns: <int> a compatibility score #TODO
-        :raises ValueError: if either specified user does not exist in the database
-        :raises RuntimeError: if a relationship record between the two specified users cannot be found
-        """
-        #TODO
-        return compatibility_score
-
     def set_relationship_status(self, user_id_1, action, user_id_2):
         """
         Changes the status of the relationship between the two specified users.
@@ -328,6 +315,34 @@ class DB(object):
         :raises ValueError: if either specified user does not exist in the database
         :raises RuntimeError: if a relationship record between the two specified users cannot be found
         """
-        #TODO
+        a = None
+        if action == "reset":
+            pass
+        elif action == "accepts":
+            a = 1
+        elif action == "rejects":
+            a = 2
+        else:
+            raise RuntimeError
+        c = self.conn.cursor()
+        c.execute('''SELECT *
+            FROM relationship
+            WHERE idFirst=? AND idSecond=?
+            OR idFirst=? AND idSecond=?''',
+            (user_id_1, user_id_2,
+                user_id_2, user_id_1, ))
+        result = c.fetchone()
+        if result is None:
+            raise RuntimeError
+        if result["idFirst"] == user_id_1:
+            c.execute('''UPDATE relationship
+                SET statusFirst=?
+                WHERE idFirst=? AND idSecond=?''',
+                (a, user_id_1, user_id_2, ))
+        elif result["idSecond"] == user_id_1:
+            c.execute('''UPDATE relationship
+                set statusSecond=?
+                WHERE idFirst=? AND idSecond=?''',
+                (a, user_id_2, user_id_1))
+        self.conn.commit()
         return
-

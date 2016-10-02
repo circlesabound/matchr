@@ -28,11 +28,25 @@ body {
     padding-top: 10px
 }
 
+.vertical-center {
+    min-height: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+
+    text-align: center;
+}
+
+.some-padding {
+    padding: 175px 175px 175px 175px;
+}
+
 .accept-button:hover {
     background: linear-gradient(
         90deg,
         rgba(0, 0, 0, 0),
-        rgba(76, 175, 80, 0.7)
+        rgba(233, 30, 99, 0.3)
     );
 }
 
@@ -40,7 +54,7 @@ body {
     background: linear-gradient(
         270deg,
         rgba(0, 0, 0, 0),
-        rgba(244, 67, 54, 0.7)
+        rgba(3, 169, 244, 0.3)
     );
 }
 

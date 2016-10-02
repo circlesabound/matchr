@@ -6,26 +6,26 @@
 
 import cherrypy
 import urllib
-import hashlib
-import sqlite3
+import DB
+from jinja2 import Environment, FileSystemLoader
+env = Environment(loader=FileSystemLoader('public/html')) # Jinja2 environment
 
 SESSION_KEY = '_cp_username'
 
-def check_credentials(username, password):
+def verify(username, password):
     """Verifies credentials for username and password.
-    Returns None on success or a string describing the error on failure"""
-    hashedPass = hashlib.sha256(password).hexdigest()
-    if username in ('joe', 'steve') and password == 'secret':
-        return None
-    else:
-        return u"Incorrect username or password."
-    
-    # An example implementation which uses an ORM could be:
-    # u = User.get(username)
-    # if u is None:
-    #     return u"Username %s is unknown to me." % username
-    # if u.password != md5.new(password).hexdigest():
-    #     return u"Incorrect password"
+    Returns user ID on success or a string describing the error on failure"""
+    try:
+        db = DB.DB("matchr.db")
+        db.connect()
+        userID = db.check_credentials(username, password)
+        db.close()
+        if userID:
+            return userID
+        else:
+            raise ValueError("Incorrect username or password")
+    except RuntimeError:
+        return "Could not open database"
 
 def check_auth(*args, **kwargs):
     """A tool that looks in config for 'auth.require'. If found and it
@@ -99,12 +99,22 @@ def all_of(*conditions):
 class AuthController(object):
     
     def on_login(self, username):
-        """Called on successful login"""
+        try:
+            db = DB.DB("matchr.db")
+            db.connect()
+            userID = cherrypy.session[SESSION_KEY]
+            cherrypy.session['user_details'] = db.get_user_details(userID)
+        except ValueError:
+            raise ValueError("Could not find user details")
+        except RuntimeError:
+            raise ValueError("Could not open database")
     
     def on_logout(self, username):
         """Called on logout"""
     
     def get_loginform(self, username, msg="Enter login information", from_page="/"):
+        tmpl = env.get_template("login.html")
+        return tmpl.render(user = username, message = msg, from_pg = from_page) 
         return """<html><body>
             <form method="post" action="/auth/login">
             <input type="hidden" name="from_page" value="%(from_page)s" />
@@ -119,13 +129,13 @@ class AuthController(object):
         if username is None or password is None:
             return self.get_loginform("", from_page=from_page)
         
-        error_msg = check_credentials(username, password)
-        if error_msg:
-            return self.get_loginform(username, error_msg, from_page)
-        else:
-            cherrypy.session[SESSION_KEY] = cherrypy.request.login = username
-            self.on_login(username)
+        try:
+            userID = verify(username, password)
+            cherrypy.session[SESSION_KEY] = cherrypy.request.login = userID
+            self.on_login(userID)
             raise cherrypy.HTTPRedirect(from_page or "/")
+        except ValueError as e:
+            return self.get_loginform(username, e.args, from_page)
     
     @cherrypy.expose
     def logout(self, from_page="/"):

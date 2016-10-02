@@ -217,7 +217,7 @@ class DB(object):
         user_dict["first_name"] = result["fName"]
         user_dict["last_name"] = result["lName"]
         user_dict["gender"] = result["gender"]
-        user_dict["image"] = result["image"]
+        user_dict["image"] = str(result["image"], 'utf-8')
         user_dict["description"] = result["description"]
         user_dict["email"] = result["email"]
         user_dict["password_hash"] = result["password"]

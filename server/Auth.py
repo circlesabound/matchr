@@ -114,15 +114,7 @@ class AuthController(object):
     
     def get_loginform(self, username, msg="Enter login information", from_page="/"):
         tmpl = env.get_template("login.html")
-        return tmpl.render(user = username, message = msg, from_pg = from_page) 
-        return """<html><body>
-            <form method="post" action="/auth/login">
-            <input type="hidden" name="from_page" value="%(from_page)s" />
-            %(msg)s<br />
-            Username: <input type="text" name="username" value="%(username)s" /><br />
-            Password: <input type="password" name="password" /><br />
-            <input type="submit" value="Log in" />
-        </body></html>""" % locals()
+        return tmpl.render(user = username, message = msg, from_pg = from_page)
     
     @cherrypy.expose
     def login(self, username=None, password=None, from_page="/"):
